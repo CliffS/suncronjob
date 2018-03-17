@@ -1,0 +1,30 @@
+{
+  "name": "suncronjob",
+  "version": "0.1.0",
+  "description": "A type of cron library that can work by time or in relation to sunrise / sunset ",
+  "main": "lib/suncron.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "coffee -c -o lib src",
+    "watch": "coffee -c -o lib -w src &",
+    "prepublishOnly": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CliffS/suncronjob.git"
+  },
+  "keywords": [
+    "cron",
+    "sunrise",
+    "sunset"
+  ],
+  "author": "Cliff Stanford <cliff@may.be>",
+  "license": "Unlicense",
+  "bugs": {
+    "url": "https://github.com/CliffS/suncronjob/issues"
+  },
+  "homepage": "https://github.com/CliffS/suncronjob#readme",
+  "devDependencies": {
+    "coffeescript": "^2.2.3"
+  }
+}
