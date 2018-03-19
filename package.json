@@ -1,6 +1,6 @@
 {
   "name": "suncronjob",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A type of cron library that can work by time or in relation to sunrise / sunset ",
   "main": "lib/suncron.js",
   "scripts": {
