@@ -61,4 +61,4 @@ typings/
 .*.sw?
 
 # Compiled code
-lib/
+# lib/
