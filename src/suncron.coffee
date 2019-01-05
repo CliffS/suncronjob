@@ -14,31 +14,35 @@ class SunCronJob
       offset: 'before'
       riseset: 'sunrise'
       once: false
-    Object.assign @, defaults, params
-    delay = (((@hours * 60) + @minutes) * 60 + @seconds) * 1000
+    @params = Object.assign {}, defaults, params
+    delay = (((@params.hours * 60) + @params.minutes) * 60 + @params.seconds) * 1000
     # delay is milliseconds after
-    @delay = switch @offset
+    @delay = switch @params.offset
       when 'before'
         -delay
       when 'after'
         delay
       else
         throw new TypeError 'offset must be "before" or "after"'
-    unless @riseset in ['sunrise', 'sunset']
+    unless @params.riseset in ['sunrise', 'sunset']
       throw new TypeError 'riseset must be "sunrise" or "sunset"'
-    @cronTime = @next()
-    @onComplete = if @once then =>
-        params.onComplete?()
-        running = false
-      else =>
-        params.onComplete?()
-        @cronTime = @next()
-        @job = new CronJob @
-    @job = new CronJob @
+    throw new TypeError 'onTick is required' unless typeof params.ontick is 'function'
+    cronJob =
+      cronTime: @next()
+      onTick: (complete) =>
+        @params.onTick complete
+        tomorrow = new Date
+        tomorrow.setDate tomorrow.getDate() + 1
+        @job.setTime @next tomorrow
+      onComplete: @params.onComplete
+      start: @params.start
+      utcOffset: 0
+      unrefTimeout: @params.unrefTimeout
+    @job = new CronJob cronJob
 
   next: (date = new Date()) ->
-    times = SunCalc.getTimes date, @latitude, @longitude
-    time = new Date times[@riseset].valueOf() + @delay
+    times = SunCalc.getTimes date, @params.latitude, @params.longitude
+    time = new Date times[@params.riseset].valueOf() + @delay
     if time <= new Date
       date.setDate date.getDate() + 1
       @next date
@@ -46,10 +50,8 @@ class SunCronJob
 
   start: ->
     @job.start()
-    @running = true
 
   stop: ->
     @job.stop()
-    @running = false
 
 module.exports = SunCronJob
