@@ -26,14 +26,15 @@ class SunCronJob
         throw new TypeError 'offset must be "before" or "after"'
     unless @params.riseset in ['sunrise', 'sunset']
       throw new TypeError 'riseset must be "sunrise" or "sunset"'
-    throw new TypeError 'onTick is required' unless typeof params.ontick is 'function'
+    throw new TypeError 'onTick is required' unless typeof params.onTick is 'function'
     cronJob =
       cronTime: @next()
       onTick: (complete) =>
-        @params.onTick complete
+        params.onTick complete
         tomorrow = new Date
         tomorrow.setDate tomorrow.getDate() + 1
-        @job.setTime @next tomorrow
+        tomorrow.setUTCHours 0, 0, 0, 0
+        @setTime new CronTime @next tomorrow
       onComplete: @params.onComplete
       start: @params.start
       utcOffset: 0
