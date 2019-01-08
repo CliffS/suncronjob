@@ -31,9 +31,7 @@ class SunCronJob
       cronTime: @next()
       onTick: (complete) =>
         params.onTick complete
-        tomorrow = new Date
-        tomorrow.setDate tomorrow.getDate() + 1
-        tomorrow.setUTCHours 0, 0, 0, 0
+        tomorrow = new Date().setUTCHours 24, 0, 0, 0
         @setTime new CronTime @next tomorrow
       onComplete: @params.onComplete
       start: @params.start
