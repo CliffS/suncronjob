@@ -32,7 +32,10 @@ class SunCronJob
       onTick: (complete) ->
         params.onTick complete
         tomorrow = new Date().setUTCHours 24, 0, 0, 0
-        @job.setTime new CronTime @next tomorrow
+        if @once
+          @job.stop()
+        else
+          @job.setTime new CronTime @next tomorrow
       onComplete: @params.onComplete
       start: @params.start
       utcOffset: 0
