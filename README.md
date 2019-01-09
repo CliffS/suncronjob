@@ -97,6 +97,12 @@ job.stop()
 
 This stops the job from running.
 
+```javascript
+job.next()
+```
+
+This calculates the next time this job will (or would) run.
+
 ## Acknowlegements
 
 Many thanks to [Kelektiv](https://github.com/kelektiv) for his
