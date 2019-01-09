@@ -29,23 +29,24 @@ class SunCronJob
     throw new TypeError 'onTick is required' unless typeof params.onTick is 'function'
     cronJob =
       cronTime: @next()
-      onTick: (complete) =>
+      onTick: (complete) ->
         params.onTick complete
         tomorrow = new Date().setUTCHours 24, 0, 0, 0
-        @setTime new CronTime @next tomorrow
+        @job.setTime new CronTime @next tomorrow
       onComplete: @params.onComplete
       start: @params.start
       utcOffset: 0
       unrefTimeout: @params.unrefTimeout
+      context: @
     @job = new CronJob cronJob
 
   next: (date = new Date()) ->
     times = SunCalc.getTimes date, @params.latitude, @params.longitude
     time = new Date times[@params.riseset].valueOf() + @delay
     if time <= new Date
-      date.setDate date.getDate() + 1
-      @next date
-    else time
+      @next new Date().setUTCHours 24, 0, 0, 0
+    else
+      time
 
   start: ->
     @job.start()
