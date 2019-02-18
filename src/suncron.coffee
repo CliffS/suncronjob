@@ -1,10 +1,14 @@
-
-{ CronJob, CronTime } = require 'cron'
 SunCalc = require 'suncalc'
+
+tomorrow = =>
+  date = new Date
+  date.setDate date.getDate() + 1
+  date
 
 class SunCronJob
 
-  constructor: (params) ->
+  constructor: (params, @job) ->
+    throw new TypeError unless typeof @job is 'function'
     defaults =
       latitude: 51.4826
       longitude: 0
@@ -26,30 +30,26 @@ class SunCronJob
         throw new TypeError 'offset must be "before" or "after"'
     unless @riseset in ['sunrise', 'sunset']
       throw new TypeError 'riseset must be "sunrise" or "sunset"'
-    @cronTime = @next()
-    @onComplete = if @once then =>
-        params.onComplete?()
-        running = false
-      else =>
-        params.onComplete?()
-        @cronTime = @next()
-        @job = new CronJob @
-    @job = new CronJob @
+    @runAt @next()
+
+  runAt: (date) ->
+    delay = date.valueOf() - new Date().valueOf()
+    # Use setImmediate to prevent infinite recursion on runAt()
+    setImmediate =>
+      @timer = setTimeout =>
+        @job()
+        @runAt @next tomorrow() unless @once
+      , delay
 
   next: (date = new Date()) ->
     times = SunCalc.getTimes date, @latitude, @longitude
     time = new Date times[@riseset].valueOf() + @delay
-    if time <= new Date
-      date.setDate date.getDate() + 1
-      @next date
+    if time.valueOf() <= new Date().valueOf()
+      @next tomorrow()
     else time
 
-  start: ->
-    @job.start()
-    @running = true
-
-  stop: ->
-    @job.stop()
-    @running = false
+  cancel: ->
+    clearTimeout @timer if @timer
+    delete @timer
 
 module.exports = SunCronJob

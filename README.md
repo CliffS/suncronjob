@@ -2,7 +2,7 @@
 
 # suncronjob
 
-This is a version of the [cron][cron] library that
+This is a version of cron that
 is based around sunrise and sunset rather than a fixed
 time of day.
 
@@ -10,6 +10,11 @@ time of day.
 
     npm install suncronjob
 
+## Note
+
+From version 2.0.0 onwards, this no longer calls an external
+library for the cron function.  Also this version uses a
+different syntax from version 1.
 
 ## Example
 
@@ -27,7 +32,10 @@ options = {
   once: false           // every day.
 };
 
-const job = new SunCronJob(options);
+const task = function() {
+  console.log("Hello, World!");
+
+const job = new SunCronJob(options, task);
 ```
 
 ## Usage
@@ -37,7 +45,7 @@ const job = new SunCronJob(options);
 ```javascript
 SunCronJob = require('suncronjob');
 
-const job = new SunCronJob(options);
+const job = new SunCronJob(options, task);
 ```
 
 #### Options
@@ -71,36 +79,27 @@ This must be set to "sunrise" or "sunset" (or left unset).
 
 If set to *true*, this job will only run once.
 
-**onTick**      (*Required*)
+### Task
 
-The function to fire at the specified time.
+This is the function to run each day at the time before or after
+sunset as specified.
 
-**onComplete**  (*Optional*)
-
-A function that will fire when the job is complete, when it is stopped.
-
-**start**       *(Default: false)*
-
-Specifies whether to start the job just before exiting the constructor.
-
-### Functions
+### Function
 
 ```javascript
-job.start();
+job.cancel()
 ```
 
-This runs your job if `start` was not passed to the constructor.
-
-```javascript
-job.stop()
-```
-
-This stops the job from running.
+This cancels the timer and thus stops the job.  There is no way
+to restart it, other than calling `new()` again.
 
 ## Acknowlegements
 
 Many thanks to [Kelektiv](https://github.com/kelektiv) for his
 excellent [cron][cron] package.
+
+However, version 2.0.0 of this package no longer uses the cron
+package.
 
 ## Author
 
